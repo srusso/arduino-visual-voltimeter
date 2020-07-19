@@ -2,7 +2,7 @@ package net.sr89.core.lwjgl3;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import net.sr89.core.VoltimeterStart;
+import net.sr89.core.VoltimeterStartJavaWrapper;
 
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {
@@ -11,7 +11,7 @@ public class Lwjgl3Launcher {
 	}
 
 	private static Lwjgl3Application createApplication() {
-		return new Lwjgl3Application(new VoltimeterStart(), getDefaultConfiguration());
+		return new Lwjgl3Application(new VoltimeterStartJavaWrapper(), getDefaultConfiguration());
 	}
 
 	private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {

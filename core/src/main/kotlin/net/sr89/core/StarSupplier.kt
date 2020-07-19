@@ -12,7 +12,8 @@ class StarSupplier(private val starDensity: Float) {
         val starCount = (width * height * starDensity).toInt()
         val stars = Array<Vector2>(false, starCount)
         val random = Random()
-        for (i in 0 until starCount) {
+
+        for (i in 1..starCount) {
             stars.add(Vector2(random.nextFloat(), random.nextFloat()))
         }
         return stars
