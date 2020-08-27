@@ -1,4 +1,4 @@
-package net.sr89.core
+package net.sr89.voltimeter.core
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2

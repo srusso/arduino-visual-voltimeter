@@ -1,4 +1,4 @@
-package net.sr89.core
+package net.sr89.voltimeter.core
 
 import java.time.Duration
 
@@ -10,6 +10,9 @@ class TimeCycle(private val duration: Duration) {
         start = System.nanoTime()
     }
 
+    /**
+     * Returns a number between 0 and 1
+     */
     fun currentPositionWithinCycle(currentNanos: Long): Float {
         val nanosElapsedSinceCycleStart = currentNanos - start
         val currentCycle = currentCycle(currentNanos)
