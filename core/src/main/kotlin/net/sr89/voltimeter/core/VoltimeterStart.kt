@@ -9,8 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
-import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.utils.Array
+import net.sr89.voltimeter.measurements.MeasurementSource
 import net.sr89.voltimeter.measurements.MeasurementStore
 import net.sr89.voltimeter.render.MeasurementRenderer
 import java.time.Duration
@@ -19,11 +18,14 @@ class VoltimeterStart : ApplicationAdapter() {
     private var batch: SpriteBatch? = null
     private var image: Texture? = null
     private var font: BitmapFont? = null
+    private var measurementThread: Thread? = null
+    private var stopMeasuring: Boolean = false
 
     private var shapeRenderer: ShapeRenderer? = null
     private val cycle = TimeCycle(Duration.ofSeconds(1))
     private val measurementRenderer: MeasurementRenderer = MeasurementRenderer()
     private val measurementStore: MeasurementStore = MeasurementStore(1000, Duration.ofSeconds(10))
+    private val measurementSource: MeasurementSource = MeasurementSource()
 
     override fun create() {
         batch = SpriteBatch()
@@ -31,6 +33,18 @@ class VoltimeterStart : ApplicationAdapter() {
         shapeRenderer = ShapeRenderer()
         font = BitmapFont()
         cycle.startCycle()
+        measurementThread = Thread(Runnable {
+            while(true) {
+                if (stopMeasuring) {
+                    println("Bye!")
+                    return@Runnable
+                }
+                measurementStore.add(measurementSource.nextMeasurement())
+                Thread.sleep(100)
+            }
+        })
+
+        measurementThread!!.start()
     }
 
     override fun render() {
@@ -55,5 +69,6 @@ class VoltimeterStart : ApplicationAdapter() {
         batch!!.dispose()
         image!!.dispose()
         shapeRenderer!!.dispose()
+        stopMeasuring = true
     }
 }
