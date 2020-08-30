@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.TimeUtils
 import net.sr89.voltimeter.measurements.MeasurementStore
+import net.sr89.voltimeter.util.MathUtils.missingRatioValue
 import java.time.Duration
 import kotlin.math.max
 
@@ -53,10 +54,10 @@ class MeasurementRenderer {
             val timeFromOrigin = max(measurement.timestamp - minTimestamp, 0)
 
             // x coordinate (time)
-            floatArray[2 * i] = startX + ((xBoxSize * timeFromOrigin) / timeMemoryMillis)
+            floatArray[2 * i] = startX + missingRatioValue(timeFromOrigin.toFloat(), timeMemoryMillis, xBoxSize)
 
             // y coordinate (measurement)
-            floatArray[2 * i + 1] = startY + ((measurement.voltage - minMeasurement.voltage)) * yBoxSize / measurementDelta
+            floatArray[2 * i + 1] = startY + missingRatioValue(measurement.voltage - minMeasurement.voltage, measurementDelta, yBoxSize)
         }
         return floatArray
     }
