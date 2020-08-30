@@ -1,6 +1,7 @@
 package net.sr89.voltimeter.render
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.TimeUtils
@@ -9,6 +10,7 @@ import net.sr89.voltimeter.measurements.MeasurementStore
 import net.sr89.voltimeter.util.math.missingRatioValue
 import java.time.Duration
 import kotlin.math.max
+import kotlin.math.min
 
 class MeasurementRenderer {
     private val timeMemory = Duration.ofSeconds(5)
@@ -30,12 +32,24 @@ class MeasurementRenderer {
         shapeRenderer.polyline(floatArray)
         shapeRenderer.line(Vector2(startX, startY), Vector2(startX, endY))
         shapeRenderer.line(Vector2(startX, startY), Vector2(endX, startY))
-        renderInfoLine(shapeRenderer, mouseInputProcessor, startY, endY)
+        renderInfoLine(shapeRenderer, mouseInputProcessor, startY, endY, startX, endX)
     }
 
-    private fun renderInfoLine(shapeRenderer: ShapeRenderer, mouseInputProcessor: MouseInputProcessor, startY: Float, endY: Float) {
-        val xPosition = mouseInputProcessor.currentMouseX().toFloat()
+    private fun renderInfoLine(
+            shapeRenderer: ShapeRenderer,
+            mouseInputProcessor: MouseInputProcessor,
+            startY: Float,
+            endY: Float,
+            startX: Float,
+            endX: Float) {
+        val xPosition = max(min(mouseInputProcessor.currentMouseX().toFloat(), endX), startX)
+
+        val oldColor = shapeRenderer.color
+
+        shapeRenderer.color = Color.RED
         shapeRenderer.line(Vector2(xPosition, startY), Vector2(xPosition, endY))
+
+        shapeRenderer.color = oldColor
     }
 
     private fun measurementsToCoordinates(
