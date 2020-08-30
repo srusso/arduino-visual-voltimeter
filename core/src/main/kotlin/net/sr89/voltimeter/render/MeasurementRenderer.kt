@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.TimeUtils
+import net.sr89.voltimeter.input.MouseInputProcessor
 import net.sr89.voltimeter.measurements.MeasurementStore
 import net.sr89.voltimeter.util.math.missingRatioValue
 import java.time.Duration
@@ -12,7 +13,7 @@ import kotlin.math.max
 class MeasurementRenderer {
     private val timeMemory = Duration.ofSeconds(5)
 
-    fun render(measurementStore: MeasurementStore, shapeRenderer: ShapeRenderer) {
+    fun render(measurementStore: MeasurementStore, mouseInputProcessor: MouseInputProcessor, shapeRenderer: ShapeRenderer) {
         if (measurementStore.size() < 10) {
             return
         }
@@ -29,6 +30,12 @@ class MeasurementRenderer {
         shapeRenderer.polyline(floatArray)
         shapeRenderer.line(Vector2(startX, startY), Vector2(startX, endY))
         shapeRenderer.line(Vector2(startX, startY), Vector2(endX, startY))
+        renderInfoLine(shapeRenderer, mouseInputProcessor, startY, endY)
+    }
+
+    private fun renderInfoLine(shapeRenderer: ShapeRenderer, mouseInputProcessor: MouseInputProcessor, startY: Float, endY: Float) {
+        val xPosition = mouseInputProcessor.currentMouseX().toFloat()
+        shapeRenderer.line(Vector2(xPosition, startY), Vector2(xPosition, endY))
     }
 
     private fun measurementsToCoordinates(

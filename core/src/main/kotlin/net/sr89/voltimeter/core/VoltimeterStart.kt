@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
+import net.sr89.voltimeter.input.MouseInputProcessor
 import net.sr89.voltimeter.measurements.MeasurementSource
 import net.sr89.voltimeter.measurements.MeasurementStore
 import net.sr89.voltimeter.render.MeasurementRenderer
@@ -26,6 +27,7 @@ class VoltimeterStart : ApplicationAdapter() {
     private val measurementRenderer: MeasurementRenderer = MeasurementRenderer()
     private val measurementStore: MeasurementStore = MeasurementStore(1000, Duration.ofSeconds(10))
     private val measurementSource: MeasurementSource = MeasurementSource()
+    private val mouseInputProcessor: MouseInputProcessor = MouseInputProcessor()
 
     override fun create() {
         batch = SpriteBatch()
@@ -33,6 +35,7 @@ class VoltimeterStart : ApplicationAdapter() {
         shapeRenderer = ShapeRenderer()
         font = BitmapFont()
         cycle.startCycle()
+        Gdx.input.inputProcessor = mouseInputProcessor
         measurementThread = Thread(Runnable {
             while(true) {
                 if (stopMeasuring) {
@@ -54,7 +57,7 @@ class VoltimeterStart : ApplicationAdapter() {
         shapeRenderer!!.begin(ShapeType.Line)
         shapeRenderer!!.color = Color.YELLOW
 
-        measurementRenderer.render(measurementStore, shapeRenderer!!)
+        measurementRenderer.render(measurementStore, mouseInputProcessor, shapeRenderer!!)
 
         shapeRenderer!!.end()
     }
