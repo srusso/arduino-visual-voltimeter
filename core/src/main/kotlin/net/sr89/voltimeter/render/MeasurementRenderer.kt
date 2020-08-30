@@ -5,9 +5,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.TimeUtils
 import net.sr89.voltimeter.measurements.MeasurementStore
+import java.time.Duration
 import kotlin.math.max
 
 class MeasurementRenderer {
+    private val timeMemory = Duration.ofSeconds(5)
+
     fun render(measurementStore: MeasurementStore, shapeRenderer: ShapeRenderer) {
         if (measurementStore.size() < 10) {
             return
@@ -20,22 +23,41 @@ class MeasurementRenderer {
         val startY: Float = (height / 5).toFloat()
         val endY: Float = 4 * startY
 
-        val floatArray = FloatArray(measurementStore.size() * 2)
-
-        val now = TimeUtils.millis()
-        val fiveSecondsAgo = now - 5000
-
-        for(i in 0 until measurementStore.size()) {
-            val measurement = measurementStore.get(i)
-            val timeDelta = max(measurement.timestamp - fiveSecondsAgo, 0)
-            val displacementX: Float = timeDelta / 5000F
-
-            floatArray[2 * i] = startX + displacementX * 50 //x
-            floatArray[2 * i + 1] = startY + measurement.voltage * 50 //y
-        }
+        val floatArray = measurementsToCoordinates(measurementStore, startX, endX, startY, endY)
 
         shapeRenderer.polyline(floatArray)
         shapeRenderer.line(Vector2(startX, startY), Vector2(startX, endY))
         shapeRenderer.line(Vector2(startX, startY), Vector2(endX, startY))
+    }
+
+    private fun measurementsToCoordinates(
+            measurementStore: MeasurementStore,
+            startX: Float,
+            endX: Float,
+            startY: Float,
+            endY: Float
+    ): FloatArray {
+        val floatArray = FloatArray(measurementStore.size() * 2)
+
+        val now = TimeUtils.millis()
+        val minTimestamp = now - timeMemory.toMillis()
+        val timeMemoryMillis = timeMemory.toMillis().toFloat()
+        val xBoxSize = endX - startX
+        val yBoxSize = endY - startY
+        val minMeasurement = measurementStore.min()!!
+        val maxMeasurement = measurementStore.max()!!
+        val measurementDelta = maxMeasurement.voltage - minMeasurement.voltage
+
+        for (i in 0 until measurementStore.size()) {
+            val measurement = measurementStore.get(i)
+            val timeFromOrigin = max(measurement.timestamp - minTimestamp, 0)
+
+            // x coordinate (time)
+            floatArray[2 * i] = startX + ((xBoxSize * timeFromOrigin) / timeMemoryMillis)
+
+            // y coordinate (measurement)
+            floatArray[2 * i + 1] = startY + ((measurement.voltage - minMeasurement.voltage)) * yBoxSize / measurementDelta
+        }
+        return floatArray
     }
 }
