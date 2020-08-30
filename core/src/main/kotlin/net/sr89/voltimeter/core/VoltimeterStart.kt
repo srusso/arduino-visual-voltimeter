@@ -57,15 +57,9 @@ class VoltimeterStart : ApplicationAdapter() {
         shapeRenderer!!.begin(ShapeType.Line)
         shapeRenderer!!.color = Color.YELLOW
 
-        measurementRenderer.render(measurementStore, mouseInputProcessor, shapeRenderer!!)
+        measurementRenderer.render(measurementStore, mouseInputProcessor, shapeRenderer!!, batch!!, font!!)
 
         shapeRenderer!!.end()
-    }
-
-    private fun drawCycleCount(currentNanos: Long, clockCenter: Pair<Float, Float>) {
-        batch!!.begin()
-        font!!.draw(batch, cycle.currentCycle(currentNanos).toString(), clockCenter.first + 50, clockCenter.second + 50)
-        batch!!.end()
     }
 
     override fun dispose() {
