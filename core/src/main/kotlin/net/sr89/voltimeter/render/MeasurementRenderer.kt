@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.TimeUtils
 import net.sr89.voltimeter.measurements.MeasurementStore
-import net.sr89.voltimeter.util.MathUtils.missingRatioValue
+import net.sr89.voltimeter.util.math.missingRatioValue
 import java.time.Duration
 import kotlin.math.max
 
