@@ -87,7 +87,7 @@ class MeasurementRenderer {
         val measurementDelta = maxMeasurement.voltage - minMeasurement.voltage
         val infoLineXPosition = actualInfoLineXPosition(mouseInputProcessor, endX, startX)
         var closestMeasurement: Measurement = measurementStore.get(0)
-        val minDistanceFromInfoLine: Float = Float.POSITIVE_INFINITY
+        var minDistanceFromInfoLine: Float = Float.POSITIVE_INFINITY
 
         for (i in 0 until measurementStore.size()) {
             val measurement = measurementStore.get(i)
@@ -97,6 +97,7 @@ class MeasurementRenderer {
             val xPosition = startX + missingRatioValue(timeFromOrigin.toFloat(), timeMemoryMillis, xBoxSize)
             floatArray[2 * i] = xPosition
             if (abs(infoLineXPosition - xPosition) < minDistanceFromInfoLine) {
+                minDistanceFromInfoLine = abs(infoLineXPosition - xPosition)
                 closestMeasurement = measurement
             }
 
