@@ -30,14 +30,46 @@ class MeasurementRenderer {
         val endX: Float = 4 * startX
         val startY: Float = (height / 5).toFloat()
         val endY: Float = 4 * startY
+        val midY: Float = startY + ((endY - startY) / 2)
+        val yBoxSize: Float = endY - startY
+        val xBoxSize: Float = endX - startX
+        val dottedLineYDistance: Float = yBoxSize / 6
 
         val coordinates = measurementsToCoordinates(measurementStore, mouseInputProcessor, startX, endX, startY, endY)
 
+        shapeRenderer.color = Color.GREEN
+
+        renderHorizontalDottedLines(measurementStore, spriteBatch, font, startX, startY, endX, midY, dottedLineYDistance, shapeRenderer)
+
+        shapeRenderer.line(Vector2(startX, midY), Vector2(endX, midY))
+
+        shapeRenderer.color = Color.RED
         shapeRenderer.polyline(coordinates.first)
+
+        shapeRenderer.color = Color.GREEN
         shapeRenderer.line(Vector2(startX, startY), Vector2(startX, endY))
-        shapeRenderer.line(Vector2(startX, startY), Vector2(endX, startY))
+
+        shapeRenderer.color = Color.WHITE
         renderInfoLine(shapeRenderer, mouseInputProcessor, startY, endY, startX, endX)
         printInfoLineMeasurement(spriteBatch, font, startX, startY, coordinates.second)
+    }
+
+    private fun renderHorizontalDottedLines(
+            measurementStore: MeasurementStore, spriteBatch: SpriteBatch, font: BitmapFont, startX: Float, startY: Float, endX: Float, midY: Float, dottedLineYDistance: Float, shapeRenderer: ShapeRenderer) {
+        val dottedLineLength = 5
+
+        for (lineXStart in generateSequence(startX) { currX -> currX + dottedLineLength * 2 }.takeWhile { currX -> currX + dottedLineLength < endX }) {
+            for (mult in generateSequence(-3) { i -> i + 1 }.filter { i -> i != 0 }.takeWhile { i -> i <= 3 }) {
+                val lineY = midY + dottedLineYDistance * mult
+                shapeRenderer.line(Vector2(lineXStart, lineY), Vector2(lineXStart + dottedLineLength, lineY))
+
+                val measurementRange = (measurementStore.max()?.voltage ?: 0F) - (measurementStore.min()?.voltage ?: 0F)
+                val lineMeasurementIndicator = measurementRange * (mult / 6)
+                spriteBatch.begin()
+                font.draw(spriteBatch, String.format("%.2f", lineMeasurementIndicator), startX - 50, lineY)
+                spriteBatch.end()
+            }
+        }
     }
 
     private fun printInfoLineMeasurement(spriteBatch: SpriteBatch, font: BitmapFont, startX: Float, startY: Float, measurement: Measurement) {
@@ -55,12 +87,7 @@ class MeasurementRenderer {
             endX: Float) {
         val xPosition = actualInfoLineXPosition(mouseInputProcessor, endX, startX)
 
-        val oldColor = shapeRenderer.color
-
-        shapeRenderer.color = Color.RED
         shapeRenderer.line(Vector2(xPosition, startY), Vector2(xPosition, endY))
-
-        shapeRenderer.color = oldColor
     }
 
     /**
