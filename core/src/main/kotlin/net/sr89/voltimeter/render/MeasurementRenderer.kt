@@ -42,12 +42,12 @@ class MeasurementRenderer {
         renderHorizontalDottedLines(measurementStore, spriteBatch, font, startX, startY, endX, midY, dottedLineYDistance, shapeRenderer)
 
         shapeRenderer.line(Vector2(startX, midY), Vector2(endX, midY))
+        
+        shapeRenderer.color = Color.GREEN
+        shapeRenderer.line(Vector2(startX, startY), Vector2(startX, endY))
 
         shapeRenderer.color = Color.RED
         shapeRenderer.polyline(coordinates.first)
-
-        shapeRenderer.color = Color.GREEN
-        shapeRenderer.line(Vector2(startX, startY), Vector2(startX, endY))
 
         shapeRenderer.color = Color.WHITE
         renderInfoLine(shapeRenderer, mouseInputProcessor, startY, endY, startX, endX)
@@ -59,12 +59,12 @@ class MeasurementRenderer {
         val dottedLineLength = 5
 
         for (lineXStart in generateSequence(startX) { currX -> currX + dottedLineLength * 2 }.takeWhile { currX -> currX + dottedLineLength < endX }) {
-            for (mult in generateSequence(-3) { i -> i + 1 }.filter { i -> i != 0 }.takeWhile { i -> i <= 3 }) {
+            for (mult in sequenceOf(-3, -2, -1, 1, 2, 3)) {
                 val lineY = midY + dottedLineYDistance * mult
                 shapeRenderer.line(Vector2(lineXStart, lineY), Vector2(lineXStart + dottedLineLength, lineY))
 
                 val measurementRange = (measurementStore.max()?.voltage ?: 0F) - (measurementStore.min()?.voltage ?: 0F)
-                val lineMeasurementIndicator = measurementRange * (mult / 6)
+                val lineMeasurementIndicator = measurementRange * (mult.toFloat() / 6F)
                 spriteBatch.begin()
                 font.draw(spriteBatch, String.format("%.2f", lineMeasurementIndicator), startX - 50, lineY)
                 spriteBatch.end()
