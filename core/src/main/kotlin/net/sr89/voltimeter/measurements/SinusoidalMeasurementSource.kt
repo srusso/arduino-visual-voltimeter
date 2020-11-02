@@ -3,7 +3,7 @@ package net.sr89.voltimeter.measurements
 import com.badlogic.gdx.utils.TimeUtils
 import kotlin.math.sin
 
-class MeasurementSource {
+class SinusoidalMeasurementSource {
     private var a: Double = 0.0
 
     fun nextMeasurement(): Measurement {

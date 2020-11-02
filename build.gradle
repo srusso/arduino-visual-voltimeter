@@ -33,6 +33,10 @@ subprojects {
 		maven { url 'https://jitpack.io' }
 		jcenter()
 	}
+	dependencies {
+	    implementation "com.fazecast:jSerialComm:2.6.0"
+	    compile fileTree(dir: '../libs', include: ['*.jar'])
+	}
 }
 
 // Clearing Eclipse project data in root folder:

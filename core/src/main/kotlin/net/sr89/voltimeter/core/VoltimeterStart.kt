@@ -10,8 +10,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
 import net.sr89.voltimeter.input.MouseInputProcessor
-import net.sr89.voltimeter.measurements.MeasurementSource
 import net.sr89.voltimeter.measurements.MeasurementStore
+import net.sr89.voltimeter.measurements.SerialCOMMeasurementSource
 import net.sr89.voltimeter.render.MeasurementRenderer
 import java.time.Duration
 
@@ -26,7 +26,7 @@ class VoltimeterStart : ApplicationAdapter() {
     private val cycle = TimeCycle(Duration.ofSeconds(1))
     private val measurementRenderer: MeasurementRenderer = MeasurementRenderer()
     private val measurementStore: MeasurementStore = MeasurementStore(1000, Duration.ofSeconds(10))
-    private val measurementSource: MeasurementSource = MeasurementSource()
+    private val measurementSource: SerialCOMMeasurementSource = SerialCOMMeasurementSource()
     private val mouseInputProcessor: MouseInputProcessor = MouseInputProcessor()
 
     override fun create() {
@@ -36,14 +36,19 @@ class VoltimeterStart : ApplicationAdapter() {
         font = BitmapFont()
         cycle.startCycle()
         Gdx.input.inputProcessor = mouseInputProcessor
+
         measurementThread = Thread(Runnable {
-            while(true) {
-                if (stopMeasuring) {
-                    println("Bye!")
-                    return@Runnable
+            measurementSource.use {
+                while (true) {
+                    if (stopMeasuring) {
+                        println("Bye!")
+                        return@Runnable
+                    }
+                    val nextMeasurement = it.nextMeasurement()
+                    if (nextMeasurement != null) {
+                        measurementStore.add(nextMeasurement)
+                    }
                 }
-                measurementStore.add(measurementSource.nextMeasurement())
-                Thread.sleep(100)
             }
         })
 

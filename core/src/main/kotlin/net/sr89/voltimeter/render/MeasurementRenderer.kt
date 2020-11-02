@@ -102,7 +102,8 @@ class MeasurementRenderer {
             startY: Float,
             endY: Float
     ): Pair<FloatArray, Measurement> {
-        val floatArray = FloatArray(measurementStore.size() * 2)
+        val measurementCount = measurementStore.size()
+        val floatArray = FloatArray(measurementCount * 2)
 
         val now = TimeUtils.millis()
         val minTimestamp = now - timeMemory.toMillis()
@@ -116,7 +117,7 @@ class MeasurementRenderer {
         var closestMeasurement: Measurement = measurementStore.get(0)
         var minDistanceFromInfoLine: Float = Float.POSITIVE_INFINITY
 
-        for (i in 0 until measurementStore.size()) {
+        for (i in 0 until measurementCount) {
             val measurement = measurementStore.get(i)
             val timeFromOrigin = max(measurement.timestamp - minTimestamp, 0)
 
