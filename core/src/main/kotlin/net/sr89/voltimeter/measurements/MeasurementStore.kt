@@ -4,17 +4,17 @@ import com.badlogic.gdx.utils.Queue
 import java.time.Duration
 
 class MeasurementStore(private val maxMeasurementCount: Int, private val maxMeasurementInterval: Duration) {
-    private val measurements: Queue<Measurement> = Queue(maxMeasurementCount)
+    private val measurements: Queue<Measurement> = Queue(maxMeasurementCount + 1)
 
     private var minMeasurement: Measurement? = null
     private var maxMeasurement: Measurement? = null
 
     fun add(measurement: Measurement) {
-        if (measurements.size == maxMeasurementCount) {
+        measurements.addLast(measurement)
+
+        if (measurements.size > maxMeasurementCount) {
             measurements.removeFirst()
         }
-
-        measurements.addLast(measurement)
 
         if (minMeasurement == null || measurement.voltage < minMeasurement!!.voltage) {
             minMeasurement = measurement
@@ -30,7 +30,7 @@ class MeasurementStore(private val maxMeasurementCount: Int, private val maxMeas
     }
 
     fun size(): Int {
-        return measurements.size
+        return kotlin.math.min(measurements.size, maxMeasurementCount)
     }
 
     fun min(): Measurement? {
