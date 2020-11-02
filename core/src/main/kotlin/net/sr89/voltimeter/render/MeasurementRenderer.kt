@@ -102,7 +102,7 @@ class MeasurementRenderer {
             startY: Float,
             endY: Float
     ): Pair<FloatArray, Measurement> {
-        val measurementCount = measurementStore.size()
+        val measurementCount = measurementStore.size() - 2
         val floatArray = FloatArray(measurementCount * 2)
 
         val now = TimeUtils.millis()

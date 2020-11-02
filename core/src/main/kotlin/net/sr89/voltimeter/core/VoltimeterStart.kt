@@ -25,7 +25,7 @@ class VoltimeterStart : ApplicationAdapter() {
     private var shapeRenderer: ShapeRenderer? = null
     private val cycle = TimeCycle(Duration.ofSeconds(1))
     private val measurementRenderer: MeasurementRenderer = MeasurementRenderer()
-    private val measurementStore: MeasurementStore = MeasurementStore(1000, Duration.ofSeconds(10))
+    private val measurementStore: MeasurementStore = MeasurementStore(2300, Duration.ofSeconds(10))
     private val measurementSource: SerialCOMMeasurementSource = SerialCOMMeasurementSource()
     private val mouseInputProcessor: MouseInputProcessor = MouseInputProcessor()
 
