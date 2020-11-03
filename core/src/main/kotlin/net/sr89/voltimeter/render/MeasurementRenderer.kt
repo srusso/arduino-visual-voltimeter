@@ -103,7 +103,6 @@ class MeasurementRenderer {
             endY: Float
     ): Pair<FloatArray, Measurement> {
         val measurementCount = measurementStore.size()
-        val floatArray = FloatArray(measurementCount * 2)
 
         val now = TimeUtils.millis()
         val minTimestamp = now - timeMemory.toMillis()
@@ -117,20 +116,34 @@ class MeasurementRenderer {
         var closestMeasurement: Measurement = measurementStore.get(0)
         var minDistanceFromInfoLine: Float = Float.POSITIVE_INFINITY
 
+        var firstMeasurementWithinMemory = 0
+
         for (i in 0 until measurementCount) {
+            val measurement = measurementStore.get(i)
+
+            if (measurement.timestamp > minTimestamp) {
+                firstMeasurementWithinMemory = i
+                break
+            }
+        }
+
+        val floatArray = FloatArray((measurementCount - firstMeasurementWithinMemory) * 2)
+
+        for (i in firstMeasurementWithinMemory until measurementCount) {
             val measurement = measurementStore.get(i)
             val timeFromOrigin = max(measurement.timestamp - minTimestamp, 0)
 
             // x coordinate (time)
-            val xPosition = startX + missingRatioValue(timeFromOrigin.toFloat(), timeMemoryMillis, xBoxSize)
-            floatArray[2 * i] = xPosition
+            val xPosition = startX + 1 + missingRatioValue(timeFromOrigin.toFloat(), timeMemoryMillis, xBoxSize)
+            val floatArrayIndex = i - firstMeasurementWithinMemory
+            floatArray[2 * floatArrayIndex] = xPosition
             if (abs(infoLineXPosition - xPosition) < minDistanceFromInfoLine) {
                 minDistanceFromInfoLine = abs(infoLineXPosition - xPosition)
                 closestMeasurement = measurement
             }
 
             // y coordinate (measurement)
-            floatArray[2 * i + 1] = startY + missingRatioValue(measurement.voltage - minMeasurement.voltage, measurementDelta, yBoxSize)
+            floatArray[2 * floatArrayIndex + 1] = startY + missingRatioValue(measurement.voltage - minMeasurement.voltage, measurementDelta, yBoxSize)
         }
 
         return Pair(floatArray, closestMeasurement)

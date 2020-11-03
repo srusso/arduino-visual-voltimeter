@@ -2,12 +2,11 @@ package net.sr89.voltimeter.measurements.store
 
 import com.badlogic.gdx.utils.Queue
 import net.sr89.voltimeter.measurements.Measurement
-import java.time.Duration
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.withLock
 
-class MutableMeasurementStore(private val maxMeasurementCount: Int, private val maxMeasurementInterval: Duration) : MeasurementStore {
+class MutableMeasurementStore(private val maxMeasurementCount: Int) : MeasurementStore {
     private val measurements: Queue<Measurement> = Queue(maxMeasurementCount + 1)
     private val measurementArrayForCopy: Array<Measurement?> = Array(maxMeasurementCount) { null }
 
