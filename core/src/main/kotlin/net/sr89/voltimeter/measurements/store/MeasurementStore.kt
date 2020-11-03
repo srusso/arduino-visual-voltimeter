@@ -13,5 +13,7 @@ interface MeasurementStore {
 
     fun max(): Measurement?
 
+    fun oldest(): Measurement?
+
     fun copyForRenderThread(): MeasurementStore
 }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.TimeUtils
+import net.sr89.voltimeter.collection.CircularQueue
 import net.sr89.voltimeter.input.MouseInputProcessor
 import net.sr89.voltimeter.measurements.Measurement
 import net.sr89.voltimeter.measurements.store.MeasurementStore
@@ -15,14 +16,33 @@ import java.time.Duration
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 class MeasurementRenderer {
+    private fun CircularQueue<Long>.averageSuccessiveDifference(): Float {
+        if (size() < 2) {
+            return 0F
+        }
+
+        var totalDifference = 0L
+
+        for(i in 1 until size()) {
+            totalDifference += get(i) - get(i - 1)
+        }
+
+        return totalDifference.toFloat() / size()
+    }
+
     private val timeMemory = Duration.ofSeconds(5)
+    private var renderedMeasurements: Int = 0
+    private var renderingTimestamps: CircularQueue<Long> = CircularQueue(10)
 
     fun render(measurementStore: MeasurementStore, mouseInputProcessor: MouseInputProcessor, shapeRenderer: ShapeRenderer, spriteBatch: SpriteBatch, font: BitmapFont) {
         if (measurementStore.size() < 10) {
             return
         }
+
+        renderingTimestamps.add(TimeUtils.millis())
 
         val width = Gdx.graphics.width
         val height = Gdx.graphics.height
@@ -51,7 +71,7 @@ class MeasurementRenderer {
 
         shapeRenderer.color = Color.WHITE
         renderInfoLine(shapeRenderer, mouseInputProcessor, startY, endY, startX, endX)
-        printInfoLineMeasurement(spriteBatch, font, startX, startY, coordinates.second)
+        printStats(spriteBatch, font, startX, startY, measurementStore, coordinates.second)
     }
 
     private fun renderHorizontalDottedLines(
@@ -72,9 +92,24 @@ class MeasurementRenderer {
         }
     }
 
-    private fun printInfoLineMeasurement(spriteBatch: SpriteBatch, font: BitmapFont, startX: Float, startY: Float, measurement: Measurement) {
+    private fun printStats(
+            spriteBatch: SpriteBatch,
+            font: BitmapFont, startX: Float,
+            startY: Float,
+            measurementStore: MeasurementStore,
+            whiteLineMeasurement: Measurement) {
         spriteBatch.begin()
-        font.draw(spriteBatch, String.format("%.2f", measurement.voltage), startX, startY - 10)
+        val infoBoxText = String.format(
+                "Value at white line: %.2f\n" +
+                        "Measurements rendered: %d\n" +
+                        "Measurements per second: %.1f\n" +
+                        "Rendering FPS: %d\n",
+                whiteLineMeasurement.voltage,
+                renderedMeasurements,
+                renderedMeasurements.toFloat() / Duration.ofMillis(TimeUtils.millis() - measurementStore.oldest()!!.timestamp).toSeconds(),
+                (Duration.ofSeconds(1).toMillis().toFloat() / renderingTimestamps.averageSuccessiveDifference()).roundToInt()
+        )
+        font.draw(spriteBatch, infoBoxText, startX, startY - 10)
         spriteBatch.end()
     }
 
@@ -127,7 +162,8 @@ class MeasurementRenderer {
             }
         }
 
-        val floatArray = FloatArray((measurementCount - firstMeasurementWithinMemory) * 2)
+        renderedMeasurements = measurementCount - firstMeasurementWithinMemory
+        val floatArray = FloatArray(renderedMeasurements * 2)
 
         for (i in firstMeasurementWithinMemory until measurementCount) {
             val measurement = measurementStore.get(i)

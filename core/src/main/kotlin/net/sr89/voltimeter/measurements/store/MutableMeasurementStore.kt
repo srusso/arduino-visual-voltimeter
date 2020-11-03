@@ -54,6 +54,16 @@ class MutableMeasurementStore(private val maxMeasurementCount: Int) : Measuremen
         return maxMeasurement
     }
 
+    override fun oldest(): Measurement? {
+        lock.readLock().withLock {
+            return if (measurements.isEmpty) {
+                null
+            } else {
+                measurements.first()
+            }
+        }
+    }
+
     override fun copyForRenderThread(): MeasurementStore {
         return lock.readLock().withLock {
             for(i in 0 until measurements.size) {
@@ -64,7 +74,7 @@ class MutableMeasurementStore(private val maxMeasurementCount: Int) : Measuremen
                 measurementArrayForCopy[i] = null
             }
 
-            ImmutableMeasurementStore(measurementArrayForCopy, measurements.size, minMeasurement, maxMeasurement)
+            ImmutableMeasurementStore(measurementArrayForCopy, measurements.size, minMeasurement, maxMeasurement, oldest())
         }
     }
 }

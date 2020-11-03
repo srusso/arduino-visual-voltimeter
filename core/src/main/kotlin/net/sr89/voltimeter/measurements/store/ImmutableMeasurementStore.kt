@@ -6,7 +6,8 @@ class ImmutableMeasurementStore(
         private val measurements: Array<Measurement?>,
         private val size: Int,
         private val min: Measurement?,
-        private val max: Measurement?
+        private val max: Measurement?,
+        private val oldest: Measurement?
 ) : MeasurementStore {
 
     override fun add(measurement: Measurement) {
@@ -27,6 +28,10 @@ class ImmutableMeasurementStore(
 
     override fun max(): Measurement? {
         return max
+    }
+
+    override fun oldest(): Measurement? {
+        return oldest
     }
 
     override fun copyForRenderThread(): MeasurementStore {

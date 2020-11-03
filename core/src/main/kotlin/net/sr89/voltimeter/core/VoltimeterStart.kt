@@ -46,7 +46,7 @@ class VoltimeterStart : ApplicationAdapter() {
                         return@Runnable
                     }
                     val nextMeasurement = it.nextMeasurement()
-                    Thread.sleep(50L)
+                    Thread.sleep(200L)
                     if (nextMeasurement != null) {
                         measurementStore.add(nextMeasurement)
                     }
