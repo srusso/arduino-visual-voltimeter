@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
 import net.sr89.voltimeter.input.MouseInputProcessor
+import net.sr89.voltimeter.measurements.MeasurementSource
 import net.sr89.voltimeter.measurements.MeasurementStore
 import net.sr89.voltimeter.measurements.SerialCOMMeasurementSource
 import net.sr89.voltimeter.render.MeasurementRenderer
@@ -26,7 +27,7 @@ class VoltimeterStart : ApplicationAdapter() {
     private val cycle = TimeCycle(Duration.ofSeconds(1))
     private val measurementRenderer: MeasurementRenderer = MeasurementRenderer()
     private val measurementStore: MeasurementStore = MeasurementStore(2300, Duration.ofSeconds(10))
-    private val measurementSource: SerialCOMMeasurementSource = SerialCOMMeasurementSource()
+    private val measurementSource: MeasurementSource = SerialCOMMeasurementSource()
     private val mouseInputProcessor: MouseInputProcessor = MouseInputProcessor()
 
     override fun create() {
