@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.TimeUtils
 import net.sr89.voltimeter.input.MouseInputProcessor
 import net.sr89.voltimeter.measurements.Measurement
-import net.sr89.voltimeter.measurements.MeasurementStore
+import net.sr89.voltimeter.measurements.store.MeasurementStore
 import net.sr89.voltimeter.util.math.missingRatioValue
 import java.time.Duration
 import kotlin.math.abs

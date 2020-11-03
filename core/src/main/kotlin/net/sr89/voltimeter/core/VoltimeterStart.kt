@@ -63,7 +63,7 @@ class VoltimeterStart : ApplicationAdapter() {
         shapeRenderer!!.begin(ShapeType.Line)
         shapeRenderer!!.color = Color.YELLOW
 
-        measurementRenderer.render(measurementStore, mouseInputProcessor, shapeRenderer!!, batch!!, font!!)
+        measurementRenderer.render(measurementStore.copyForRenderThread(), mouseInputProcessor, shapeRenderer!!, batch!!, font!!)
 
         shapeRenderer!!.end()
     }
