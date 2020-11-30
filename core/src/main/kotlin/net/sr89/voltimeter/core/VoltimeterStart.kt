@@ -14,7 +14,6 @@ import net.sr89.voltimeter.measurements.MeasurementSource
 import net.sr89.voltimeter.measurements.SinusoidalMeasurementSource
 import net.sr89.voltimeter.measurements.store.MutableMeasurementStore
 import net.sr89.voltimeter.render.MeasurementRenderer
-import java.time.Duration
 
 class VoltimeterStart : ApplicationAdapter() {
     private var batch: SpriteBatch? = null
@@ -24,7 +23,6 @@ class VoltimeterStart : ApplicationAdapter() {
     private var stopMeasuring: Boolean = false
 
     private var shapeRenderer: ShapeRenderer? = null
-    private val cycle = TimeCycle(Duration.ofSeconds(1))
     private val measurementRenderer: MeasurementRenderer = MeasurementRenderer()
     private val measurementStore: MutableMeasurementStore = MutableMeasurementStore(2300)
     private val measurementSource: MeasurementSource = SinusoidalMeasurementSource()
@@ -35,7 +33,6 @@ class VoltimeterStart : ApplicationAdapter() {
         image = Texture("badlogic.png")
         shapeRenderer = ShapeRenderer()
         font = BitmapFont()
-        cycle.startCycle()
         Gdx.input.inputProcessor = mouseInputProcessor
 
         measurementThread = Thread(Runnable {

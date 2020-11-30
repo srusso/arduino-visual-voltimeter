@@ -87,7 +87,7 @@ class MeasurementRenderer {
 
         shapeRenderer.color = Color.WHITE
         renderInfoLine(shapeRenderer, mouseInputProcessor, startY, endY, startX, endX)
-        printStats(spriteBatch, font, startX, startY, measurementStore, coordinates.second)
+        printStats(spriteBatch, font, startX, startY, coordinates.second)
     }
 
     private fun renderHorizontalDottedLines(
@@ -112,7 +112,6 @@ class MeasurementRenderer {
             spriteBatch: SpriteBatch,
             font: BitmapFont, startX: Float,
             startY: Float,
-            measurementStore: MeasurementStore,
             whiteLineMeasurement: Measurement) {
         spriteBatch.begin()
         val infoBoxText = String.format(
@@ -122,14 +121,14 @@ class MeasurementRenderer {
                         "Rendering FPS: %d\n",
                 whiteLineMeasurement.voltage,
                 renderedMeasurements,
-                measurementsPerSecond(measurementStore),
+                measurementsPerSecond(),
                 getFps()
         )
         font.draw(spriteBatch, infoBoxText, startX, startY - 10)
         spriteBatch.end()
     }
 
-    private fun measurementsPerSecond(measurementStore: MeasurementStore): Long {
+    private fun measurementsPerSecond(): Long {
         val mpsValue = renderedMeasurements.toFloat() / timeMemory.toSeconds()
         mpsValues.add(mpsValue)
         return mpsValues.roundedAverage()
