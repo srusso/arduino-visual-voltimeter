@@ -33,9 +33,25 @@ class MeasurementRenderer {
         return totalDifference.toFloat() / size()
     }
 
+    private fun <T: Number> CircularQueue<T>.roundedAverage(): Long {
+        if (size() == 0) {
+            return 0
+        }
+
+        var total: Long = 0
+
+        for(i in 0 until size()) {
+            total += get(i).toLong()
+        }
+
+        return total / size()
+    }
+
     private val timeMemory = Duration.ofSeconds(5)
     private var renderedMeasurements: Int = 0
     private var renderingTimestamps: CircularQueue<Long> = CircularQueue(10)
+    private var fpsValues: CircularQueue<Int> = CircularQueue(100)
+    private var mpsValues: CircularQueue<Float> = CircularQueue(100)
 
     fun render(measurementStore: MeasurementStore, mouseInputProcessor: MouseInputProcessor, shapeRenderer: ShapeRenderer, spriteBatch: SpriteBatch, font: BitmapFont) {
         if (measurementStore.size() < 10) {
@@ -102,7 +118,7 @@ class MeasurementRenderer {
         val infoBoxText = String.format(
                 "Value at white line: %.2f\n" +
                         "Measurements rendered: %d\n" +
-                        "Measurements per second: %.1f\n" +
+                        "Measurements per second: %d\n" +
                         "Rendering FPS: %d\n",
                 whiteLineMeasurement.voltage,
                 renderedMeasurements,
@@ -113,12 +129,16 @@ class MeasurementRenderer {
         spriteBatch.end()
     }
 
-    private fun measurementsPerSecond(measurementStore: MeasurementStore): Float {
-        return renderedMeasurements.toFloat() / Duration.ofMillis(TimeUtils.millis() - measurementStore.oldest()!!.timestamp).toSeconds()
+    private fun measurementsPerSecond(measurementStore: MeasurementStore): Long {
+        val mpsValue = renderedMeasurements.toFloat() / timeMemory.toSeconds()
+        mpsValues.add(mpsValue)
+        return mpsValues.roundedAverage()
     }
 
-    private fun getFps(): Int {
-        return (Duration.ofSeconds(1).toMillis().toFloat() / renderingTimestamps.averageSuccessiveDifference()).roundToInt()
+    private fun getFps(): Long {
+        val currentFps = (Duration.ofSeconds(1).toMillis().toFloat() / renderingTimestamps.averageSuccessiveDifference()).roundToInt()
+        fpsValues.add(currentFps)
+        return fpsValues.roundedAverage()
     }
 
     private fun renderInfoLine(
