@@ -106,11 +106,19 @@ class MeasurementRenderer {
                         "Rendering FPS: %d\n",
                 whiteLineMeasurement.voltage,
                 renderedMeasurements,
-                renderedMeasurements.toFloat() / Duration.ofMillis(TimeUtils.millis() - measurementStore.oldest()!!.timestamp).toSeconds(),
-                (Duration.ofSeconds(1).toMillis().toFloat() / renderingTimestamps.averageSuccessiveDifference()).roundToInt()
+                measurementsPerSecond(measurementStore),
+                getFps()
         )
         font.draw(spriteBatch, infoBoxText, startX, startY - 10)
         spriteBatch.end()
+    }
+
+    private fun measurementsPerSecond(measurementStore: MeasurementStore): Float {
+        return renderedMeasurements.toFloat() / Duration.ofMillis(TimeUtils.millis() - measurementStore.oldest()!!.timestamp).toSeconds()
+    }
+
+    private fun getFps(): Int {
+        return (Duration.ofSeconds(1).toMillis().toFloat() / renderingTimestamps.averageSuccessiveDifference()).roundToInt()
     }
 
     private fun renderInfoLine(
